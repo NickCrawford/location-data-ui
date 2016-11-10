@@ -5,17 +5,16 @@
   </header>
 
   <div class="mdl-layout__drawer">
-    <span class="mdl-layout-title">Title</span>
+    <span class="mdl-layout-title">Sections</span>
     <nav class="mdl-navigation">
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
-      <a class="mdl-navigation__link" href="">Link</a>
+      <a class="mdl-navigation__link" href="">Map</a>
+      <a class="mdl-navigation__link" href="">Data Sets</a>
     </nav>
   </div>
 
   <main class="mdl-layout__content">
-    <location-map></location-map>
+    <leaflet lf-center="map.porto" lf-draw="map.drawOptions" height="480px" width="100%">
+  </leaflet>
   </main>
 
   <footer class="mdl-mini-footer">
