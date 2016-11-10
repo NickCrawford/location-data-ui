@@ -15,7 +15,7 @@ function MainController($scope, leafletDrawEvents) {
 					zoom: 12
 			},
 			drawOptions: {
-				position: "topright",
+				position: "topleft",
 				draw: {
 					polyline: {
 						metric: false

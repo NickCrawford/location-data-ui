@@ -54,6 +54,10 @@ main {
   height: 100%;
 }
 
+.mdl-layout__content {
+  height: calc(100vh - 56px - 64px);
+}
+
 html, body {
   height: 100%;
 }
