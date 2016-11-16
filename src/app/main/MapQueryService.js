@@ -1,50 +1,35 @@
 (function() {
-    "use strict";
+
+    'use strict';
 
     angular
-        .module('locationDataUi')
-        .factory('MapQueryService', MapQueryService)
+    .module('locationDataUi')
+    .factory('MapQueryService', MapQueryService);
 
-    function MapQueryService($http, Environment, Auth, WebSocketService) {
+    function MapQueryService($http, Environment) {
 
         return {
-            squareQuery: squareQuery
+            circleQuery: circleQuery
         }
 
-        function squareQuery(region) {
-            console.log(Enviorment);
+        function circleQuery(lat, long, radius) {
+            console.log(lat, long,radius);
             var request = {
                 method: 'GET',
-                url: Environment.apiUrl + '',
-                params: {
-                    offset: index,
-                    limit: numToLoad,
-                }
+                url: Environment.apiUrl + '/near/'+lat+','+long+'/'+radius
+
             };
+
+            //router.get('/near/:lat,:long/:max?-:min?', locations.near);
 
             return $http(request)
             .then(function(result) {
 
                 console.log(result);
 
-                // convos = convos.append(result.data);
-                convos = result.data;
-
-                if (convos.length < numToLoad) {
-                    hasMoreData = false;
-                }else{
-                    index += numToLoad;
-                }
-
-                return {
-                    convos: convos,
-                    hasMoreData: hasMoreData
-                };
             });
-        } else {
-            throw new Error('no more convos to return')
-        }
 
+        }
     }
 
 }());

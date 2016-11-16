@@ -11,7 +11,7 @@ var host = 'local';
     function Environment(host) {
     	var LocalConfig = {
     		environment: 'stage',
-    		apiUrl: 'http://127.0.0.1:8081/'
+    		apiUrl: 'http://127.0.0.1:3000/v1.0'
     	}
 
     	if (host === 'local') {
