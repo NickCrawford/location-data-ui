@@ -14,7 +14,7 @@
 				porto: {
 					lat: 41.1414,
 					lng: -8.61864,
-					zoom: 12
+					zoom: 16
 				},
 				drawOptions: {
 					position: "topleft",
@@ -56,7 +56,55 @@
 				console.log(e, leafletEvent, leafletObject, model, modelName);
 				
 				if (leafletEvent.layerType === 'circle') {
-					MapQueryService.circleQuery(leafletEvent.layer._latlng.lat, leafletEvent.layer._latlng.lng, leafletEvent.layer._mRadius);
+					MapQueryService.circleQuery(leafletEvent.layer._latlng.lat, leafletEvent.layer._latlng.lng, leafletEvent.layer._mRadius)
+					.then( function(result) {
+
+						var polyLines = [];
+
+						var curTrip = null;
+
+						var pl = [];
+
+						for (var i = result.data.length - 1; i >= 0; i--) {
+							if (curTrip == null) {
+								curTrip = result.data[i].TripID; 
+							}
+
+							if (result.data[i].TripID == curTrip) { 
+								var point = new L.LatLng(
+										result.data[i].loc.coordinates[1], //Lat
+										result.data[i].loc.coordinates[0] //Long
+									);
+								pl.push( point );
+									
+								
+							} else {
+								//console.log(curTrip);
+								var pline = new L.Polyline(pl, {
+									    color: 'red',
+									    weight: 3,
+									    opacity: 0.5,
+									    smoothFactor: 1
+								    });
+								//console.log(pline);
+								polyLines.push(pline);
+							    pl = [];
+							    var point = new L.LatLng(
+										result.data[i].loc.coordinates[1], //Lat
+										result.data[i].loc.coordinates[0] //Long
+									);
+								pl.push( point );
+							}
+						}
+
+						for (var i = polyLines.length - 1; i >= 0; i--) {
+							//console.log(i);
+							polyLines[i].addTo(leafletObject);
+						}
+
+						console.log("Done Drawing");
+
+					});
 				} 
 			},
 			edited: function(arg) {},

@@ -20,12 +20,10 @@
 
             };
 
-            //router.get('/near/:lat,:long/:max?-:min?', locations.near);
-
             return $http(request)
             .then(function(result) {
-
                 console.log(result);
+                return result;
 
             });
 
