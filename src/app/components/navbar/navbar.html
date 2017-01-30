@@ -1,15 +1,30 @@
 <div class="mdl-layout__header-row">
 	<!-- Title -->
 	<span class="mdl-layout-title">Location Data UI</span>
+
 	<!-- Add spacer, to align navigation to the right -->
 	<div class="mdl-layout-spacer"></div>
-
+	<span class="mdl-navigation__link">Time Period:</span>
+	<div class="mdl-textfield mdl-js-textfield">
+		<input style="display: inline-block; width: 51%;" class="mdl-textfield__input" type=date id="start-date" ng-model="startDate">
+	    <!-- <input style="display: inline-block; width: 45%;" class="mdl-textfield__input" type=time min="11:00" max="21:00" step="900" id="start-time" ng-model="$scope.startTime.miliseconds"> -->
+	    <span class="mdl-textfield__error">Start</span>
+	</div>
+	
+	<div class="mdl-textfield mdl-js-textfield">
+		<input style="display: inline-block; width: 51%;" class="mdl-textfield__input" type=date id="end-date" ng-model="endDate">
+	    <!-- <input style="display: inline-block; width: 45%;" class="mdl-textfield__input" type=time min="11:00" max="21:00" step="900" id="end-time"> -->
+	    <span class="mdl-textfield__error">End</span>
+	</div>
+	<button class="mdl-button mdl-js-button mdl-button--icon">
+	  <i class="material-icons">clock</i>
+	</button>
 	<!-- Navigation. We hide it in small screens. -->
 	<button id="demo-menu-lower-right" class="mdl-button mdl-js-button">
 		Query
 	</button>
 
-	<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect" for="demo-menu-lower-right">
+	<ul class="mdl-menu mdl-menu--bottom-right mdl-js-menu mdl-js-ripple-effect mdl-white" for="demo-menu-lower-right">
 		<li class="mdl-menu__item">Query By Name</li>
 		<li class="mdl-menu__item">Region Query</li>
 		<li class="mdl-menu__item">Disabled Action</li>

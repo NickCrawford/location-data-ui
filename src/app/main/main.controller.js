@@ -6,7 +6,7 @@
 	.module('locationDataUi')
 	.controller('MainController', MainController);
 
-	function MainController($scope, leafletDrawEvents, MapQueryService) {
+	function MainController($scope, $log, leafletDrawEvents, PointQueryService) {
 		var drawnItems = new L.FeatureGroup();
 
 		angular.extend($scope, {
@@ -47,65 +47,102 @@
 						remove: true
 					}
 				}
-			}
+			},
+			startDate: new Date(Date.UTC(1970, 0, 1, 0, 0, 0)), //Normalize minus timezones
+			endDate: new Date()
 		});
 
 		var handle = {
 			created: function(e,leafletEvent, leafletObject, model, modelName) {
 				drawnItems.addLayer(leafletEvent.layer);
-				console.log(e, leafletEvent, leafletObject, model, modelName);
+				$log.log(e, leafletEvent, leafletObject, model, modelName);
 				
 				if (leafletEvent.layerType === 'circle') {
-					MapQueryService.circleQuery(leafletEvent.layer._latlng.lat, leafletEvent.layer._latlng.lng, leafletEvent.layer._mRadius)
+					$log.log($scope.startDate, $scope.endDate);
+					var start = $scope.startDate.getTime();
+
+					var end = $scope.endDate.getTime();
+					
+					$log.log(start, end);
+
+					PointQueryService.circleQuery(leafletEvent.layer._latlng.lat, leafletEvent.layer._latlng.lng, leafletEvent.layer._mRadius, start, end)
+
 					.then( function(result) {
 
-						var polyLines = [];
-
-						var curTrip = null;
-
-						var pl = [];
-
 						for (var i = result.data.length - 1; i >= 0; i--) {
-							if (curTrip == null) {
-								curTrip = result.data[i].TripID; 
-							}
 
-							if (result.data[i].TripID == curTrip) { 
-								var point = new L.LatLng(
-										result.data[i].loc.coordinates[1], //Lat
-										result.data[i].loc.coordinates[0] //Long
-									);
-								pl.push( point );
+							var coordinate = new L.LatLng(
+								result.data[i].loc.coordinates[1], // Latitude
+								result.data[i].loc.coordinates[0] //Longitude
+								);
+							
+							var marker = new L.Marker(coordinate, {});
+							marker.addTo(leafletObject);
+						}
+
+						// var polyLines = [];
+
+						// var curTrip = null;
+
+						// var pl = [];
+
+						// for (var i = result.data.length - 1; i >= 0; i--) {
+						// 	if (curTrip == null) {
+						// 		curTrip = result.data[i].TripID; 
+						// 	}
+
+						// 	if (result.data[i].TripID == curTrip) { 
+						// 		var point = new L.LatLng(
+						// 				result.data[i].loc.coordinates[1], //Lat
+						// 				result.data[i].loc.coordinates[0] //Long
+						// 			);
+						// 		pl.push( point );
 									
 								
-							} else {
-								//console.log(curTrip);
-								var pline = new L.Polyline(pl, {
-									    color: 'red',
-									    weight: 3,
-									    opacity: 0.5,
-									    smoothFactor: 1
-								    });
-								//console.log(pline);
-								polyLines.push(pline);
-							    pl = [];
-							    var point = new L.LatLng(
-										result.data[i].loc.coordinates[1], //Lat
-										result.data[i].loc.coordinates[0] //Long
-									);
-								pl.push( point );
-							}
-						}
+						// 	} else {
+						// 		//$log.log(curTrip);
+						// 		var pline = new L.Polyline(pl, {
+						// 			    color: 'red',
+						// 			    weight: 3,
+						// 			    opacity: 0.5,
+						// 			    smoothFactor: 1
+						// 		    });
+						// 		//$log.log(pline);
+						// 		polyLines.push(pline);
+						// 	    pl = [];
+						// 	    var point = new L.LatLng(
+						// 				result.data[i].loc.coordinates[1], //Lat
+						// 				result.data[i].loc.coordinates[0] //Long
+						// 			);
+						// 		pl.push( point );
+						// 	}
+						// }
 
-						for (var i = polyLines.length - 1; i >= 0; i--) {
-							//console.log(i);
-							polyLines[i].addTo(leafletObject);
-						}
+						// for (var i = polyLines.length - 1; i >= 0; i--) {
+						// 	//$log.log(i);
+						// 	polyLines[i].addTo(leafletObject);
+						// }
 
-						console.log("Done Drawing");
+						$log.log("Done Drawing");
 
 					});
-				} 
+				} else if (leafletEvent.layerType === "rectangle") {
+					PointQueryService.polyQuery(leafletEvent.layer._latlngs, start, end)
+
+					.then( function(result) {
+
+						for (var i = result.data.length - 1; i >= 0; i--) {
+
+							var coordinate = new L.LatLng(
+								result.data[i].loc.coordinates[1], // Latitude
+								result.data[i].loc.coordinates[0] //Longitude
+								);
+							
+							var marker = new L.Marker(coordinate, {});
+							marker.addTo(leafletObject);
+						}
+					});
+				}
 			},
 			edited: function(arg) {},
 			deleted: function(arg) {
