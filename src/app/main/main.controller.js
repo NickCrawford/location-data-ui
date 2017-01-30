@@ -69,16 +69,68 @@
 
 					.then( function(result) {
 
-						for (var i = result.data.length - 1; i >= 0; i--) {
+						// for (var i = result.data.length - 1; i >= 0; i--) {
 
-							var coordinate = new L.LatLng(
-								result.data[i].loc.coordinates[1], // Latitude
-								result.data[i].loc.coordinates[0] //Longitude
-								);
+						// 	var coordinate = new L.LatLng(
+						// 		result.data[i].loc.coordinates[1], // Latitude
+						// 		result.data[i].loc.coordinates[0] //Longitude
+						// 		);
 							
-							var marker = new L.Marker(coordinate, {});
-							marker.addTo(leafletObject);
+						// 	var marker = new L.Marker(coordinate, {});
+						// 	marker.addTo(leafletObject);
+						// }
+
+						// Get all trip ids in the resulting points
+						var uniqueTrips = result.data.map(function(point) {return point.TripID;}); // [20432]
+						
+						//remove duplicates
+					    var seen = {};
+					    var out = [];
+					    var len = uniqueTrips.length;
+					    var j = 0;
+					    for(var i = 0; i < len; i++) {
+					         var item = uniqueTrips[i];
+					         if(seen[item] !== 1) {
+					               seen[item] = 1;
+					               out[j++] = item;
+					         }
+					    }
+					    uniqueTrips = out.sort();
+
+						//iterate through each unique trip id and find all lat and longs with that trip id
+						var polyLines = [];
+
+						for (var i = uniqueTrips.length - 1; i >= 0; i--) {
+							var coords = result.data.filter(function(trip) {
+								return trip.TripID === uniqueTrips[i];
+							});
+							console.log("coord", coords);
+
+							var latlngs = coords.map(function(point) {
+								return new L.LatLng(
+									point.loc.coordinates[1], //Lat
+									point.loc.coordinates[0] //Long
+								);
+							})
+							var colors = ['purple', 'yellow', 'orange', 'brown', 'black', 'red'];
+
+							var polyLine = new L.Polyline(latlngs, {
+							    color: colors[i%6],
+							    weight: 3,
+							    opacity: 0.5,
+							    smoothFactor: 1
+						    });
+
+							polyLines.push(polyLine);
 						}
+
+						console.log("unique", uniqueTrips);
+						console.log("poly lines",polyLines);
+						// var result = jsObjects.filter(function( obj ) {
+						//   return obj.b == 6;
+						// });
+
+						/* **************************** */
 
 						// var polyLines = [];
 
@@ -118,10 +170,10 @@
 						// 	}
 						// }
 
-						// for (var i = polyLines.length - 1; i >= 0; i--) {
-						// 	//$log.log(i);
-						// 	polyLines[i].addTo(leafletObject);
-						// }
+						for (var i = polyLines.length - 1; i >= 0; i--) {
+							//$log.log(i);
+							polyLines[i].addTo(leafletObject);
+						}
 
 						$log.log("Done Drawing");
 
