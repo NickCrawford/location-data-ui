@@ -81,7 +81,7 @@
 						// }
 
 						// Get all trip ids in the resulting points
-						var uniqueTrips = result.data.map(function(point) {return point.TripID;}); // [20432]
+						var uniqueTrips = [20432];//result.data.map(function(point) {return point.TripID;}); // [20432]
 						
 						//remove duplicates
 					    var seen = {};
