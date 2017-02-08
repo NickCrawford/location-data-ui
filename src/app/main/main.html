@@ -13,14 +13,41 @@
   </div>
 
   <main class="mdl-layout__content">
-    <leaflet lf-center="map.porto" lf-draw="map.drawOptions" height="100%" width="100%">
+    <div class="mdl-grid">
+      <div class="mdl-cell mdl-cell--9-col graybox">
+    <leaflet style="float:left" lf-center="map.tweets" lf-draw="map.drawOptions" legend="map.legend" height="535px" width="100%">
   </leaflet>
+      </div>
+
+  
+
+<div class="mdl-cell mdl-cell--3-col graybox">
+    <table>
+      <tr>
+        <td><input id = 'datefrom' type="text"/> Start (2015/10/01)</td>
+        <td><input id = 'dateto' type="text"/> End (2015/10/02) </td>
+      </tr>
+    </table>
+  </div>
+
+<div class="mdl-cell mdl-cell--3-col graybox">
+  <table>
+      <tr>
+        <td><input type="number" step="any" ng-model="map.tweets.lat" /> Latitude</td>
+        <td><input type="number" step="any" ng-model="map.tweets.lng" /> Longitude</td>
+        <td><input type="number" step="any" ng-model="map.tweets.zoom" /> Zoom</td>
+      </tr>
+    </table>
+   </div>
+
+
+
   </main>
 
-  <footer class="mdl-mini-footer">
+<!--   <footer class="mdl-mini-footer">
     <div class="mdl-mini-footer__right-section">
 
     </div>
-  </footer>
+  </footer> -->
 
 </div>
