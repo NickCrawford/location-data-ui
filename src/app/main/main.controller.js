@@ -83,7 +83,20 @@
                     		console.log(result.status + " error", result.statusText)
                     	}
                     });
-                } else if (leafletEvent.layerType === "rectangle" || leafletEvent.layerType === "polygon") {
+                } else if (leafletEvent.layerType === "rectangle") {
+					MapQueryService.polyQuery(leafletEvent.layer._latlngs, datefrom, dateto)
+
+					.then( function(result) {
+                    	if (result.status == "200") {
+                    		console.log("Query Successful");
+                    		drawClusters(result.data);
+                    	} else {
+                    		console.log(result.status + " error", result.statusText)
+                    	}
+					});
+
+				} else if (leafletEvent.layerType === "polygon") {
+					//Then query
 					MapQueryService.polyQuery(leafletEvent.layer._latlngs, datefrom, dateto)
 
 					.then( function(result) {

@@ -37,7 +37,7 @@
                 coordString += coordinates[i].lat +","+ coordinates[i].lng + ",";
             }
             //Close the loop
-            coordString += coordinates[coordinates.length-1].lat +","+ coordinates[coordinates.length-2].lng
+            coordString += coordinates[coordinates.length-1].lat +","+ coordinates[coordinates.length-1].lng
 
             $log.log(coordString);
             var request = {
