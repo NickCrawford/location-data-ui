@@ -29,7 +29,17 @@
       </tr>
       <tr>
         <td>Combine Clusters: <input id = 'combine-clusters' ng-model="combineClusters" type="checkbox"/></td>
-        <td>{{ selectedClusters.length }}</td>
+      </tr>
+      <tr>
+        <td>
+          Saved Regions:
+          <select name="regions" ng-change="redrawSelectedPolys()" ng-model="savedRegions" ng-options="region._latlngs for region in savedRegions" multiple>
+            <!-- <option ng-repeat="region in savedRegions" value="region">{{region._latlngs}}</option> -->
+          </select>
+        </td>
+      </tr>
+      <tr>
+        <td><button ng-click="combineSavedRegion()">Combine</button></td>
       </tr>
     </table>
   </div>

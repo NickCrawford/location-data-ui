@@ -2,6 +2,6 @@
   'use strict';
 
   angular
-    .module('locationDataUi', ['ngAria', 'ui.router', 'ui-leaflet']);
+    .module('locationDataUi', ['ngAria', 'ui.router', 'ui-leaflet', 'TurfModule']);
 
 })();

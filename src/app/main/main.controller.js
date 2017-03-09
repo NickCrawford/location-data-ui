@@ -6,13 +6,16 @@
     .module('locationDataUi')
     .controller('MainController', MainController);
 
-    function MainController($scope, leafletDrawEvents, MapQueryService) {
+    function MainController($scope, leafletDrawEvents, MapQueryService, turf) {
 
         var drawnItems = new L.FeatureGroup();
+        var polyId = 1;
+        //var savedRegionLayer = new L.Layer();
+        //drawnItems.addLayer(savedRegionLayer);
 
         angular.extend($scope, {
         	combineClusters: true,
-        	selectedClusters: [],
+            savedRegions: [],
             map: {
                 tweets: {
                     lat: 41.0814,
@@ -63,6 +66,47 @@
 
         function parseDate(input) {
         	return Date.parse(input)/1000; 
+        }
+
+
+
+        $scope.combineSavedRegion = function() {
+            if (!$scope.savedRegions || $scope.savedRegions.length <= 0) {console.log("No selected clusters");}
+
+            var testUnion = $scope.savedRegions[0].toGeoJSON();
+            testUnion.properties = {"combine" : "yes"};
+
+            for (var i = 1; i < $scope.savedRegions.length; i ++) {
+                var region = $scope.savedRegions[i].toGeoJSON();
+                console.log(testUnion);
+                region.properties = {"combine" : "yes"};
+                testUnion = turf.union(testUnion, region);
+            }
+
+            var layer = L.geoJson(testUnion);
+            drawnItems.addLayer(layer);
+
+            //$scope.map.fitBounds(layer.getBounds());
+
+            //Clear regions
+            $scope.savedRegions = [];
+
+            layer._latlngs = "Combined Polygon " + polyId;
+            polyId ++;
+            $scope.savedRegions.push( layer );
+        }
+
+        $scope.redrawSelectedPolys = function() {
+
+            // var latlngs = $scope.savedRegions.map(function(region) {
+            //   return region._latlngs;
+            // });
+
+
+            $scope.savedRegions.forEach(function(element) {
+                console.log("LatLngs:", element);
+                drawnItems.addLayer(element);
+            })
         }
 
 
@@ -132,6 +176,8 @@
 						var cluster = L.markerClusterGroup();
 						cluster.options.zoomToBoundsOnClick = false;
 
+                        //cluster._showCoverage = true;
+
 						var groupMarker = L.layerGroup();
 
 
@@ -154,41 +200,37 @@
 
 							leafletObject.addLayer(cluster);
 
-							cluster.on('clusterclick', function (a) {
-						// a.layer is actually a cluster
-						//console.log(a.layer.getAllChildMarkers());
+                            cluster.on('clusterclick', function (a) {
+                            // a.layer is actually a cluster
+                            //console.log(a.layer.getAllChildMarkers());
 
-						if ($scope.combineClusters) {
+                            if ($scope.combineClusters) {
+                                var poly = L.polygon(a.layer.getConvexHull());
 
-							console.log("combining:", a.layer);
+                
+                                $scope.savedRegions.push(poly);
 
-						// a.layer.selected = true;
-						// Add selected class to target
-						angular.element(a.layer._icon).addClass("marker-selected");
+                                
+                                $scope.redrawSelectedPolys();
+                                console.log("region:", L.polygon(a.layer.getConvexHull()));
+                                console.log("combining:", a.layer);
 
-						if (selectedClusters.length > 0) {
-						//Add selected class to children
-						var clickCluster = a.layer.getAllChildMarkers();
+                                // a.layer.selected = true;
+                                // Add selected class to target
+                                //angular.element(a.layer._icon).addClass("marker-selected");
 
-						for (i = 0; i < clickCluster.length; i++) {
-						//markerIn.push(clickCluster[i]._latlng.lat);
-						console.log(clickCluster[i]);
-						//clickCluster[i].selected = true;
-						}
-						}
 
-						$scope.selectedClusters.push(a.layer);
+                                //this._showCoverage
+                                //var mySubGroup = L.featureGroup.subGroup(parentGroup, arrayOfMarkers);
+                            }
 
-						var mySubGroup = L.featureGroup.subGroup(parentGroup, arrayOfMarkers);
-						}
+                            var clickCluster = a.layer.getAllChildMarkers();
+                            var markerIn = [];
 
-						var clickCluster = a.layer.getAllChildMarkers();
-						var markerIn = [];
-
-						for (i = 0; i < clickCluster.length; i++) {
-						//markerIn.push(clickCluster[i]._latlng.lat);
-						markerIn.push(clickCluster[i]._popup._content);
-						}
+                            for (i = 0; i < clickCluster.length; i++) {
+        						//markerIn.push(clickCluster[i]._latlng.lat);
+        						markerIn.push(clickCluster[i]._popup._content);
+                            }
 
 						console.log(markerIn);
 						}); // end of 'on cluster click'
